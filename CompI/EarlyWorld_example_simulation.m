@@ -58,7 +58,7 @@ tmax=20000; % time of simulation
 %% Create the folder to save the data simulation 
 
 %if not(isfolder('Data'))
-path_data='\Data\';
+path_data='./Data/';
 mkdir(path_data)
 %end
 cd(path_data)
@@ -68,8 +68,9 @@ mkdir(Simulation_Name)
 % cd(Simulation_Name);
 % File_Name = strcat('_General_Inputs_a0_',num2str(alpha0),'_b0_',num2str(beta0),'_ATarr_',AT_arr,'.mat');
 % save(File_Name,'A','D','beta0','alpha0','A_a','A_b','Ta','Tb','tmax','L','Ns','polymer_size');
-path_run='C:\Users\carla\Desktop\CAB-Garantia\CODE_Github_07_10_2024\CompI\';
-cd(path_run);
+%path_run='C:\Users\carla\Desktop\CAB-Garantia\CODE_Github_07_10_2024\CompI\';
+%cd(path_run);
+cd .. 
 
 %% Computes the simulation according to the parameters 
 
