@@ -6,7 +6,7 @@ The system’s performance depends on two main parameters that represent the str
 
 EarlyWorld simulates two different compartments of the clay-water interface using independent simulations:
 * Compartment I or Comp.I: Only single-stranded (ss) RNA molecules can form thanks to clay-nt interactions by random polymerization. To run a simulation of Comp.I use the files located in the folder EarlyWorld/CompI/.
-* Compartment II or Comp.II: Both ssRNA but also double-stranded (ds) RNA molecules can form thanks to clay-nt and nt-nt interactions, respectively. Here random polymerization occurs, as in Comp.I, but the replication of an original molecule due to template-dependent polymerization also takes place. To run a simulaiton of Comp.II use the files located in the folder EarlyWorld/CompII/.
+* Compartment II or Comp.II: Both ssRNA but also double-stranded (ds) RNA molecules can form thanks to clay-nt and nt-nt interactions, respectively. Here random polymerization occurs, as in Comp.I, but the replication of an original molecule due to template-dependent polymerization also takes place. To run a simulation of Comp.II use the files located in the folder EarlyWorld/CompII/.
 
 ## Comp.I simulations 
 
@@ -31,6 +31,6 @@ The simulation starts with *N* single nucleotides floating in the aqueous phase 
   ### Example
   To run an example simulation of Comp.I, use the EarlyWorld_example_simulation.m file as follows:
    ``` matlab
-  EarlyWorld_example_simulation("Example","0.8","\[0.5,2500\]","1","100","1")
+  EarlyWorld_example_simulation("Example","0.8","[0.5,2500]","1","100","1")
   ```
   Running the above code you obtain 100 realizations of an oscillating environment in which alpha follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
