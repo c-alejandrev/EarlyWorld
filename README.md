@@ -33,4 +33,4 @@ The simulation starts with *N* single nucleotides floating in the aqueous phase 
    ``` matlab
   EarlyWorld_example_simulation("Example","0.8","[0.5,2500]","1","100","1")
   ```
-  Running the above code you obtain 100 realizations of an oscillating environment in which alpha follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
+  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which alpha follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
