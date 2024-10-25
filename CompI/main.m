@@ -1,12 +1,12 @@
 
-function [Lt,Lt_OCR,Lt_bl,tf,Ut,Ut_OCR,Ct,Ct_OCR,Ct_bl,Ot_C,Ot_U,Activity,R_CELL,C_CELL]=TemporalBeta_E1(A,D,N,positions,t,beta,alpha) 
+function [Lt,Lt_OCR,Lt_bl,tf,Ut,Ut_OCR,Ct,Ct_OCR,Ct_bl,Ot_C,Ot_U,Activity,R_CELL,C_CELL]=main(A,D,N,positions,t,beta,alpha) 
 % -- Here beta and alpha are vectors, each position been a different value for a particular timestep
 
 %% INITIALIZING THE VARIABLES
 
 Lambda=positions; %Returns the length of the templante chain C, that is always going to be the total number of positions (e.g. 200)
 
-L=cell(3,sum(N)); % Create a cell, that is a sort of matrix like structure than can harbor any data type. Here they are all strings. 
+L=cell(3,sum(N)); % Create a cell, that is matrix like structure than can harbor any data type. Here they are all strings. 
                   % Here we are creating this cell with just 3 row sand
                   % sum(N) columns, where sum(N) is the total amount of nts
                   % in the media. 
