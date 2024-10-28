@@ -1,4 +1,4 @@
-function [new_R1_OCR]=OCR_table_E1(R1_OCR,R2_OCR)
+function [new_R1_OCR]=OCR_table_E1(R1_OCR,R2_OCR) % Only relevant for CompII simulations
 
 R1_R2=[R1_OCR; R2_OCR]; % Remember row 2 is the template.
 new_R1_OCR='';
