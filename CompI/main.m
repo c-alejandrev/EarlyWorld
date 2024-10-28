@@ -1048,46 +1048,46 @@ for i=1:t
             end
         end
 
-    % Update variables. NOTICE: Comment the storage of some variables (if they are not needed for the analysis) to speed up simulation time
-%     Ltemp='|';
-%     LOCRtemp='|';
-%     Lbltemp='|';
-%     for n=1:size(L,2)
-%         tempL=[L{1,n},'|'];
-%         tempLOCR=[L{2,n},'|'];
-%         tempLbl=[L{3,n},'|'];
-%         tempL2=[Ltemp,tempL];
-%         tempLOCR2=[LOCRtemp,tempLOCR];
-%         tempLbl2=[Lbltemp,tempLbl];
-%         Ltemp=tempL2; %Ltemp has the structure: '|A|A|T|AG|A|AAC|...', where | separates the different oligos/nts.
-%         LOCRtemp=tempLOCR2; 
-%         Lbltemp=tempLbl2; 
-%     end
-%     delta=2*sum(N)+1-size(Ltemp,2);
-%     if delta ~= 0  %If delta is 0, it means that we have nothing in the solution L.
-%         Ltemp(end+1:end+delta)='|';
-%         LOCRtemp(end+1:end+delta)='|';
-%         Lbltemp(end+1:end+delta)='|';
-%     end
+    Update variables. NOTICE: Comment the storage of some variables (if they are not needed for the analysis) to speed up simulation time
+    Ltemp='|';
+    LOCRtemp='|';
+    Lbltemp='|';
+    for n=1:size(L,2)
+        tempL=[L{1,n},'|'];
+        tempLOCR=[L{2,n},'|'];
+        tempLbl=[L{3,n},'|'];
+        tempL2=[Ltemp,tempL];
+        tempLOCR2=[LOCRtemp,tempLOCR];
+        tempLbl2=[Lbltemp,tempLbl];
+        Ltemp=tempL2; %Ltemp has the structure: '|A|A|T|AG|A|AAC|...', where | separates the different oligos/nts.
+        LOCRtemp=tempLOCR2; 
+        Lbltemp=tempLbl2; 
+    end
+    delta=2*sum(N)+1-size(Ltemp,2);
+    if delta ~= 0  %If delta is 0, it means that we have nothing in the solution L.
+        Ltemp(end+1:end+delta)='|';
+        LOCRtemp(end+1:end+delta)='|';
+        Lbltemp(end+1:end+delta)='|';
+    end
     
     tf=i; % Utilitarian variable
 
-%     Lt=[Lt;Ltemp];
-%     if i~=1 & size(LOCRtemp,2)~=size(Lt_OCR(end,:),2)
-%         LOCRtemp(end+1:size(Lt_OCR(end,:),2))='|';
-%     end
-%     if i~=1 & size(Lbltemp,2)~=size(Lt_bl(end,:),2)
-%         Lbltemp(end+1:size(Lt_bl(end,:),2))='|';
-%     end
-%     Lt_OCR=[Lt_OCR;LOCRtemp];
-%     Lt_bl=[Lt_bl;Lbltemp];
+    Lt=[Lt;Ltemp];
+    if i~=1 & size(LOCRtemp,2)~=size(Lt_OCR(end,:),2)
+        LOCRtemp(end+1:size(Lt_OCR(end,:),2))='|';
+    end
+    if i~=1 & size(Lbltemp,2)~=size(Lt_bl(end,:),2)
+        Lbltemp(end+1:size(Lt_bl(end,:),2))='|';
+    end
+    Lt_OCR=[Lt_OCR;LOCRtemp];
+    Lt_bl=[Lt_bl;Lbltemp];
     Ot_C=[Ot_C;O_C];
     Ot_U=[Ot_U;O_U];
     Ct=[Ct;C];
-%     Ct_OCR=[Ct_OCR;C_OCR];
-%     Ct_bl=[Ct_bl;C_bl];
-%     Ut=[Ut;U];
-%     Ut_OCR=[Ut_OCR;U_OCR];
+    Ct_OCR=[Ct_OCR;C_OCR];
+    Ct_bl=[Ct_bl;C_bl];
+    Ut=[Ut;U];
+    Ut_OCR=[Ut_OCR;U_OCR];
 
 
 end
