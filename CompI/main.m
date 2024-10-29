@@ -1048,7 +1048,7 @@ for i=1:t
             end
         end
 
-    Update variables. NOTICE: Comment the storage of some variables (if they are not needed for the analysis) to speed up simulation time
+    % -- Update variables. NOTICE: Comment the storage of some variables (if they are not needed for the analysis) to speed up simulation time
     Ltemp='|';
     LOCRtemp='|';
     Lbltemp='|';
