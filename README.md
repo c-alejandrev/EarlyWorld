@@ -24,7 +24,7 @@ The simulation starts with *N* single nucleotides floating in the aqueous phase 
 
 * Output (summary of the variables important for Comp.I simulations):
   * **_Activity_**: Cell that stores the total number of molecules that have been adsorbed and dettached from the clay over the course of the simulation, as well as this value split by polymer size.
-  * **_Ct_**: String matrix of size _t_-by-_positions_ that stores the state of each clay position at each time step; i.e., wether it is empty or if it is occupied by a nt (specifing the nt type as in _A_).
+  * **_Ct_**: String matrix of size _t_-by-_positions_ that stores the state of each clay position at each time step; i.e., wether it is empty or if it is occupied by a nt (specifying the nt type as in _A_).
   * **_Ot\_C_**: Matrix of size _t_-by-_positions_ that stores the state of each clay position at each time step: 0 if it is empty and 1 otherwise.
   * **_Lt_**: String matrix with _t_ rows that stores the state of the pool or aqueous phase at each time step; i.e., it contains all the molecules that are free in solution at each time step.
  
