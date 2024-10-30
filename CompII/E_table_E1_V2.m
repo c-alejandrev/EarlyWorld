@@ -5,7 +5,7 @@ new_R1_E='';
 
 for i=1:size(R1_R2,2)
     
-    if R1_R2(2,i)=='X'
+    if R1_R2(2,i)=='X' % This if is probably unneeded because I believe none of E labels is 'X'
         new_R1_E(i)='X';
 
     else
