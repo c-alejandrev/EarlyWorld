@@ -72,4 +72,4 @@ In order to keep track of the identity of the oligomers formed in the simulation
 
 ## Alphabet simulations 
 
-These simulations proceed exactly in the same way as those of Comp.II, the only difference being the denaturation probability (rupture_alphabets.m), that in this case depends directly on the number of hydrogen bonds of each particular nt-nt interaction, instead of depending on the length of the molecule, as it was the case in Comp.I and Comp.II simulations.
+These simulations proceed exactly in the same way as those of Comp.II, the only difference being the denaturation probability (rupture_alphabets.m), that in this case depends directly on the number of hydrogen bonds of each particular nt-nt interaction, instead of depending on the length of the molecule, as it was the case of Comp.II simulations.
