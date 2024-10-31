@@ -70,3 +70,6 @@ In order to keep track of the identity of the oligomers formed in the simulation
   ```
   Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$ and **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
 
+## Alphabet simulations 
+
+These simulations proceed exactly in the same way as those of Comp.II, the only difference being the denaturation probability (rupture_alphabets.m), that in this case depends directly on the number of hydrogen bonds of each particular nt-nt interaction, instead of depending on the length of the molecule, as it was the case in Comp.I and Comp.II simulations.
