@@ -1,5 +1,5 @@
 function [Lnew]=reduction_E1(L,P1)
-% If one nt or one oligomer dissapears from de solution, the nts that were
+% If one nt or one oligomer at position P1 dissapears from de pool, the nts that were
 % on its right colums move one column to the left, so now we have a new L
 %(Lnew) cell (matrix) of 1 unit less of column size than the original L.
 s=size(L,2);

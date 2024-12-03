@@ -6,12 +6,8 @@ function [Lt,Lt_OCR,Lt_bl,Lt_E,tf,Ut,Ut_OCR,Ut_E,Ct,Ct_OCR,Ct_bl,Ct_E,Ot_C,Ot_U,
 %   difference with Comp.II default simulations is that the denaturation probability depends on the number of hydrogen bonds between the complemenatary nucleobases and
 %   not just on the length of the duplex. The objective of these simulations is to compare the results from different alphabets, and the input variable "alphabet" is a
 %   string code to identify the alphabet:
-%       2_2 => alphabet of 2 letters, with A-U baise pair (2 hydrogen bonds)
-%       2_3 => alphabet of 2 letters, with G-C baise pair (3 hydrogen bonds)
-%       4 => alphabet of 4 letters and interactions A-U (2 hydrogen bonds), G-C (3 hydrogen bonds)
-%       4* => alphabet of 4 letters and interactions A-U (2 hydrogen bonds), G-C (3 hydrogen bonds), G-U (2 hydrogen bonds)
-%       6_2 => alphabet of 6 letters and interactions  A-U (2 hydrogen bonds), G-C (3 hydrogen bonds), X-Y (2 hydrogen bonds)
-%       6_3 => alphabet of 6 letters and interactions  A-U (2 hydrogen bonds), G-C (3 hydrogen bonds), X-Y (3 hydrogen bonds)
+%       * 2_2 => alphabet of 2 letters, with A-U baise pair (2 hydrogen bonds)
+%       * 2_3 => alphabet of 2 letters, with G-U baise pair (2 hydrogen bonds)
 %   -- In order to keep track of the identity of the oligomers formed in the simulation (i.e., wheter they are products of 
 %   template-dependent polymerization or if they are random newly-generated molecules), each nt is going to have an
 %   asigned label (called OCR label), with the following meaning:
@@ -1410,7 +1406,7 @@ for i=1:t
 
 end
 
-%disp(counter_rand);
+disp(counter_rand);
 
 % Store activity data
 Activity{1,1}='fixed level 0';

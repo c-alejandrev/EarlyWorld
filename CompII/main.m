@@ -193,7 +193,7 @@ for i=1:t
         end
 
         neg=any(Pi<=0); % the position is out in the left edge
-        % (P2+size(R1,2)-Pn) <= size(O_C,2) <=== is the condition for the right edge
+        % (P2+size(R1,2)-Pn) <= size(O_C,2) % <=== is the condition for the right edge
         
         
         %% EVALUATE STRUCTURE POSSIBLE FIXATION TO LEVEL 0 OR 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

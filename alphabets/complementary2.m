@@ -1,5 +1,6 @@
 function [Compl]=complementary2(D,RC1,RC2)
-% Length of RC1 must be the same that RC2
+% Evaluate if two molecules (RC1 and RC2) are complementary, depending on the nucleobase complementarity rules (D) of the alphabet used.
+% Length of RC1 must be the same than that of RC2.
 
 RC=zeros(1,size(RC1,2));
 for i=1:size(RC1,2)
