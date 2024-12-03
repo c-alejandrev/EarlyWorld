@@ -73,3 +73,11 @@ In order to keep track of the identity of the oligomers formed in the simulation
 ## Alphabet simulations 
 
 These simulations proceed exactly in the same way as those of Comp.II, the only difference being the denaturation probability (rupture_alphabets.m), that in this case depends directly on the number of hydrogen bonds of each particular nt-nt interaction, instead of depending on the length of the molecule, as it was the case of Comp.II simulations.
+
+ ### Example
+  To run an example of alphabet simulations, use the EarlyWorld_example_alphabet.m file as follows:
+   ``` matlab
+  EarlyWorld_example_alphabet("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","2","1","20000")
+  ```
+  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, the RNA **alphabet** is a two-letter one with G-C (three hydrogen bonds) nucleobase interactions, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$ and **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
+
