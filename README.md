@@ -92,8 +92,13 @@ The new variables that need to be incorporated into the main_hydrolysis function
 * New input variable for the case in which $P_{hyd}$ is constant:
   * **_k_hyd_**: Value of the hydrolysis probability to be used in the simulation.
   
-* New input variables for the case in which P_{hyd} oscillates:
-* 
+* New input variable for the case in which P_{hyd} oscillates:
+  * **_k_hyd_**: Array of size 1-by-_t_ that stores the value of the hydrolysis probability to be used at each time step.
+ 
+ * New output variables (equal for both cases of constant and oscillatory hydrolysis probabilities):
+  * **_HYDROLYZED_**: Cell that stores all the molecules that have been broken along the simulation, their labels, and the new molecules formed as a consequence of their hydrolysis.
+  * **_N_pbonds_**: Array of size 1-by-_t_ that stores the number of susceptible covalent bonds at eacth time step.
+  * **_H_pbonds_**: Array of size 1-by-_t_ that stores the number of hydrolyzed covalent bonds at eacth time step.
 
 
  ### Example
