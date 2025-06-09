@@ -89,8 +89,8 @@ These simulations include a probability of hydrolysis per susceptible covalent b
 
 The new variables that need to be incorporated into the main_hydrolysis function are the ones related to the calculation of hydrolysis probabilities. While the new output variables reflect the molecules hydrolyzed and the number of susceptible and broken covalent bonds.
 
-* New input variable for the case in which P_{hyd} is constant:
-* **_P_{hyd}_**: Value of the hydrolysis probability to be used in the simulation.
+* New input variable for the case in which $P_{hyd}$ is constant:
+  * **_k_hyd_**: Value of the hydrolysis probability to be used in the simulation.
   
 * New input variables for the case in which P_{hyd} oscillates:
 * 
