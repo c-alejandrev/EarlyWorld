@@ -95,13 +95,13 @@ The new variables that need to be incorporated into the main_hydrolysis function
 * New input variable for the case in which P_{hyd} oscillates:
   * **_k_hyd_**: Array of size 1-by-_t_ that stores the value of the hydrolysis probability to be used at each time step.
  
- * New output variables (equal for both cases of constant and oscillatory hydrolysis probabilities):
+* New output variables (equal for both cases of constant and oscillatory hydrolysis probabilities):
   * **_HYDROLYZED_**: Cell that stores all the molecules that have been broken along the simulation, their labels, and the new molecules formed as a consequence of their hydrolysis.
   * **_N_pbonds_**: Array of size 1-by-_t_ that stores the number of susceptible covalent bonds at eacth time step.
   * **_H_pbonds_**: Array of size 1-by-_t_ that stores the number of hydrolyzed covalent bonds at eacth time step.
 
 
- ### Example
+ ### Examples
   To run an example in which the probability of hydrolysis remains constant over time, use the EarlyWorld_hydrolysis.m file in the folder EarlyWorld/CompII/Hydrolysis/Constant/ as follows:
    ``` matlab
   EarlyWorld_hydrolysis("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000","[1e-6]")
@@ -112,4 +112,4 @@ To run an example in which the probability of hydrolysis oscillates over time, u
    ``` matlab
   EarlyWorld_hydrolysis("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000","[-7]", "[-6]", "0")
   ```
-  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}$ fluctuates as follows: $\log P_{hyd}=\frac{1}{2}\log(10^{-7}\cdot 10^{-6})+\frac{1}{2}\log(10^{-7} / 10^{-6})\sin{(2\pi t / T)}$.
+  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}$ fluctuates as follows: $\log P_{hyd}=\frac{1}{2}\log(10^{-7}\cdot 10^{-6})+\frac{1}{2}\log(10^{-7} / 10^{-6})\sin{(2\pi t / 2500)}$.
