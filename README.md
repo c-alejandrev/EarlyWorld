@@ -113,3 +113,21 @@ To run an example in which the probability of hydrolysis oscillates over time, u
   EarlyWorld_hydrolysis("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000","[-7]", "[-6]", "0")
   ```
   Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}$ fluctuates as follows: $\log P_{hyd}=\frac{1}{2}\log(10^{-7}\cdot 10^{-6})+\frac{1}{2}\log(10^{-7} / 10^{-6})\sin{(2\pi t / 2500)}$.
+
+## One compartment simulations 
+
+The one compartment version of EarlyWorld simulates polymerization and replication taking place in the same location. For that reason, simulations start with no polymer formed, but with single ribonucleotides floating in the pool, while the clay level is totally empty. As time passes, random polymerization occurs to form the first polymers, above which, template dependent replication can happen. In practice, the code for this simulations is similar to Comp.II code, but starting with no 20-nt long polymer already formed. Just when the first $\ge$ 20-nt long polymer appears, the code starts to track its specific complementary copies.
+
+### Main program
+
+* New output variables (equal for both cases of constant and oscillatory hydrolysis probabilities):
+  * **_length_20_**: Boolean variable that tells us if the $\ge$ 20-nt long polymer has formed during the simulation time or not.
+  * **_snapshot_found_**: Cell that stores the values of the different variables at the time step in which the $\ge$ 20-nt long polymer appears.
+  * **_snapshot_found_**: Cell that stores the values of the different variables at the maximum simulation time _t_.
+
+### Example
+  To run an example of one compartment simulations, use the EarlyWorld_example_simulation.m file that is located in the folder EarlyWorld/One_comp_version/ as follows:
+   ``` matlab
+  EarlyWorld_example_simulation("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000")
+  ```
+  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$ and **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
