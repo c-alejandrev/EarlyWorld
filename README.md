@@ -81,3 +81,19 @@ These simulations proceed exactly in the same way as those of Comp.II, the only 
   ```
   Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, the RNA **alphabet** is a two-letter one with G-C (three hydrogen bonds) nucleobase interactions, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$ and **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$. The results are stored as 100 matlab files in the folder /Data/Example/.
 
+## Hydrolysis simulations 
+
+These simulations include a probability of hydrolysis per susceptible covalent bond ($P_{hyd}$), with the porpose of studying how it may affect replication. 
+
+ ### Example
+  To run an example in which the probability of hydrolysis remains constant over time, use the EarlyWorld_hydrolysis.m file in the folder EarlyWorld/CompII/Hydrolysis/Constant/ as follows:
+   ``` matlab
+  EarlyWorld_hydrolysis("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000","[1e-6]")
+  ```
+  Running the above code you obtain 100 stochastic realizations of an environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}=10^{-6}$. The results are stored as 100 matlab files in the folder /Data/Example/.
+  
+To run an example in which the probability of hydrolysis oscillates over time, use the EarlyWorld_hydrolysis.m file in the folder EarlyWorld/CompII/Hydrolysis/Oscillatory/ as follows:
+   ``` matlab
+  EarlyWorld_hydrolysis("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000","[-7]", "[-6]", "0")
+  ```
+  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}$ fluctuates as follows: $\log P_{hyd}=\frac{1}{2}\log(P_{hyd}^{-7}\cdot P_{hyd}^{-6})+\frac{1}{2}\log(P_{hyd}^{-7} / P_{hyd}^{-6})\sin{(2\pi t / T)}$.
