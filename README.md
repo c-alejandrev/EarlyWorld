@@ -85,6 +85,17 @@ These simulations proceed exactly in the same way as those of Comp.II, the only 
 
 These simulations include a probability of hydrolysis per susceptible covalent bond ($P_{hyd}$), with the porpose of studying how it may affect replication. 
 
+### Main program (main_hydrolysis.m)
+
+The new variables that need to be incorporated into the main_hydrolysis function are the ones related to the calculation of hydrolysis probabilities. While the new output variables reflect the molecules hydrolyzed and the number of susceptible and broken covalent bonds.
+
+* New input variable for the case in which P_{hyd} is constant:
+* **_P_{hyd}_**: Value of the hydrolysis probability to be used in the simulation.
+  
+* New input variables for the case in which P_{hyd} oscillates:
+* 
+
+
  ### Example
   To run an example in which the probability of hydrolysis remains constant over time, use the EarlyWorld_hydrolysis.m file in the folder EarlyWorld/CompII/Hydrolysis/Constant/ as follows:
    ``` matlab
@@ -96,4 +107,4 @@ To run an example in which the probability of hydrolysis oscillates over time, u
    ``` matlab
   EarlyWorld_hydrolysis("Example","0.8","6","[0.5,5.9]","[2500,2500]","20","1","100","1","20000","[-7]", "[-6]", "0")
   ```
-  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}$ fluctuates as follows: $\log P_{hyd}=\frac{1}{2}\log(P_{hyd}^{-7}\cdot P_{hyd}^{-6})+\frac{1}{2}\log(P_{hyd}^{-7} / P_{hyd}^{-6})\sin{(2\pi t / T)}$.
+  Running the above code you obtain 100 stochastic realizations of an oscillating environment in which the original ssRNA molecule length is **20 nts**, **_alpha_** follows $\alpha=0.8 + 0.5\sin{(2\pi t/2500)}$, **_beta_** follows $\beta=6 + 5.9\sin{(2\pi t/2500)}$ and $P_{hyd}$ fluctuates as follows: $\log P_{hyd}=\frac{1}{2}\log(10^{-7}\cdot 10^{-6})+\frac{1}{2}\log(10^{-7} / 10^{-6})\sin{(2\pi t / T)}$.
