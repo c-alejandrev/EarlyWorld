@@ -1,5 +1,5 @@
 # **EarlyWorld** 
-EarlyWorld is a computational environment that simulates, in a stochastic and discrete-time manner, the non-enzymatic polymerization and template-dependent replication of RNA on a clay-water interface. 
+EarlyWorld is a computational environment that simulates, in a stochastic and discrete-time manner, the non-enzymatic polymerization and template-dependent replication of RNA on a clay-water interface ([Alejandre, C., Aguirre-Tamaral, A., Briones, C. et al. Polymerization and replication of primordial RNA induced by clay-water interface dynamics. Commun Chem 8, 236 (2025)](https://doi.org/10.1038/s42004-025-01632-w)). 
 The system’s performance depends on two main parameters that represent the strength of two types of non-covalent interactions in a particular environment: 
 * Clay - nucleotide (nt) interaction: Represented by parameter α.
 * nt - nt interaction: Represented by parameter β.
