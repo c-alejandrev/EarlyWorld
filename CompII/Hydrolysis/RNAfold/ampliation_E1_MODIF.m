@@ -27,6 +27,6 @@ Lnew{1,1}=R1;
 Lnew{2,1}=OCR_R1;
 Lnew{3,1}=bl_R1;
 Lnew{4,1}=E_R1;
-Lnew(5,1)=R1_fold;
+Lnew{5,1}=R1_fold;
 
 Lnew(:,2:(s+1))=L;

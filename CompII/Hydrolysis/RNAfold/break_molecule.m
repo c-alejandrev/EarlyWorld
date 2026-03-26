@@ -72,6 +72,7 @@ function [new_molecules]=break_molecule(breaking_positions, m_break, m_break_OCR
             end
             
             new_molecules=[new_molecules {new_m; new_m_OCR; new_m_bl; new_m_E; new_m_fold}];
+            
         end
     else
         new_bp=[0 breaking_positions size(m_break,2)];

@@ -1,4 +1,4 @@
-function EarlyWorld_MFE(Simulation_Name, alpha0, beta0, A_arr, T_arr, polymer_size, Ns_start, Ns_final, interval, tmax, log_Ph_min_arr, log_Ph_max_arr, is_sq)
+function EarlyWorld_MFE(Simulation_Name, alpha0, beta0, A_arr, T_arr, polymer_size, Ns_start, Ns_final, interval, tmax, log_Ph_min_arr, log_Ph_max_arr, is_sq, seq)
 
 
 
@@ -136,13 +136,13 @@ for n=Ns_start:Ns_final
             
         
         % -- Run the simulation
-        [Lt,Lt_OCR,Lt_bl,Lt_E,tf,Ut,Ut_OCR,Ut_E,Ct,Ct_OCR,Ct_bl,Ct_E,Ot_C,Ot_U,Activity,R_CELL,C_CELL,HYDROLYZED,N_pbonds,H_pbonds]=main_hydrolysis(A,D,N,L,tmax,beta_arr,alpha_arr,str2num(polymer_size),k_hyd);
+        [O_seq, Lt,Lt_OCR,Lt_bl,Lt_E,tf,Ut,Ut_OCR,Ut_E,Ct,Ct_OCR,Ct_bl,Ct_E,Ot_C,Ot_U,Activity,R_CELL,C_CELL,HYDROLYZED,N_pbonds,H_pbonds,folded_how_many,mfe_how_many, total_pols_pool, mean_energy, total_denat_fold, total_pols_C,total_pols_U]=main_MFE(A,D,N,L,tmax,beta_arr,alpha_arr,str2num(polymer_size),k_hyd,seq);
     
         % -- Save the simulation
         simu_time=toc;    
         File_Name = strcat('Sim_','beta0_',num2str(beta0),'_alpha0_',num2str(alpha0),'_AaAbTaTb_',num2str(A_a),'_',num2str(A_b),'_',num2str(Ta),'_',num2str(Tb),'_tmax_',num2str(tmax),'_L_',num2str(L),'_Ns_',num2str(n),'.mat'); 
         path=strcat(path_data,Simulation_Name,'/');
-        save(strcat(path,File_Name),'k_hyd','N_pbonds','H_pbonds','HYDROLYZED','Lt','Lt_OCR','Lt_bl','Lt_E','tf','Ut','Ut_OCR','Ut_E','Ct','Ct_OCR','Ct_bl','Ct_E','Ot_C','Ot_U','Activity','R_CELL','C_CELL','seed','simu_time')
+        save(strcat(path,File_Name), 'O_seq','k_hyd','N_pbonds','H_pbonds','HYDROLYZED','Lt','Lt_OCR','Lt_bl','Lt_E','tf','Ut','Ut_OCR','Ut_E','Ct','Ct_OCR','Ct_bl','Ct_E','Ot_C','Ot_U','Activity','R_CELL','C_CELL','seed','simu_time', 'folded_how_many','mfe_how_many', 'total_pols_pool', 'mean_energy', 'total_denat_fold', 'total_pols_C','total_pols_U')
     end
     
 

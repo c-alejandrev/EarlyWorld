@@ -1,4 +1,4 @@
-function [Lt,Lt_OCR,Lt_bl,Lt_E,tf,Ut,Ut_OCR,Ut_E,Ct,Ct_OCR,Ct_bl,Ct_E,Ot_C,Ot_U,Activity,R_CELL,C_CELL, HYDROLYZED, N_pbonds, H_pbonds]=main_MFE(A,D,N,positions,t,beta,alpha,polymer_size,k_hyd) 
+function [O_seq,Lt,Lt_OCR,Lt_bl,Lt_E,tf,Ut,Ut_OCR,Ut_E,Ct,Ct_OCR,Ct_bl,Ct_E,Ot_C,Ot_U,Activity,R_CELL,C_CELL, HYDROLYZED, N_pbonds, H_pbonds, folded_how_many,mfe_how_many, total_pols_pool, mean_energy, total_denat_fold, total_pols_C,total_pols_U]=main_MFE(A,D,N,positions,t,beta,alpha,polymer_size,k_hyd, seq) 
 % -- Here beta and alpha are vectors, each position been a different value for a particular timestep
 
 %% Important considerations before starting the simulation:
@@ -41,10 +41,27 @@ L=cell(5,sum(N)); % Create a cell to store the composition of the pool, that is 
                   % It should be refolded again each time step and reevaluated its Prup. The RNAs whose MFE is already the unfolded strand, always will have parameter [0] here for convenience.
 
 
-Lt=''; % Created to store the info of row 1 of L variable (pool) for each time step.
-Lt_OCR=''; % Created to store the info of row 2 of L variable for each time step.
-Lt_bl=''; % Created to store the info of row 3 of L variable for each time step.
-Lt_E=''; % Created to store the info of row 4 of L variable for each time step.
+%Lt=''; % Created to store the info of row 1 of L variable (pool) for each time step.
+% Lt_OCR=''; % Created to store the info of row 2 of L variable for each time step.
+% Lt_bl=''; % Created to store the info of row 3 of L variable for each time step.
+% Lt_E=''; % Created to store the info of row 4 of L variable for each time step.
+Lt=cell(t,1); 
+Lt_OCR=cell(t,1);
+Lt_bl=cell(t,1);
+Lt_E=cell(t,1);
+% Lt_fold=cell(t,1);
+
+%folded_how_many=NaN(t,1);
+%total_pols_pool=Nan(t,1);
+%mfe_how_many=Nan(t,1);
+folded_how_many=cell(t,2); % {total folded, [their lengths]}
+mfe_how_many=cell(t,2); % {total with mfe, [their lengths]}.
+total_pols_pool=cell(t,2); % {total pols, [their lengths]}.
+mean_energy=NaN(t,1);
+total_denat_fold=0;
+total_pols_C=cell(t,2);
+total_pols_U=cell(t,2); 
+
 
 Ot_C=[];  % Occupancy of the clay: 0 if the position is empty and 1 otherwise. It is a matrix that stores the occupancy along the entire simulation time (each row is a time step).
 Ot_U=[];  % Occupancy of the complementary level: 0 if the position is empty and 1 otherwise. It is a matrix that stores the occupancy along the entire simulation time (each row is a time step).
@@ -100,12 +117,17 @@ O_U=zeros(1,Lambda);
 %     end
 % end
 
-% -- Create random initial polymer and place it in the pool
+% -- Place original polymer (sequence) in the pool
 
 ascii='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-nums = randi(size(A,2),[1 polymer_size]);
-seq = A(nums);
+if isempty(seq) % -- If not predetermined sequence is provided, the original sequence is random
+    nums = randi(size(A,2),[1 polymer_size]);
+    seq = A(nums);
+end
+
+O_seq=seq;
+
 L{1,end+1}=seq;
 L{2,end}=repmat('O',[1,polymer_size]);
 L{3,end}=[repmat('0',[1,polymer_size-1]),'X'];
@@ -150,8 +172,8 @@ array_stripped_2=zeros(1,Lambda); % Number of dsRNA molecules denatured at level
 
 
 % -- IMPORTANT: Variables created to store all complementary (C) and replicate (R) molecules
-R_CELL={}; % Every row stores a molecule with at least one nt being of type 'R' and all of its associated labels (OCR, bl and E)
-C_CELL={}; % Every row stores a molecule with at least one nt being of type 'C' and all of its associated labels (OCR, bl and E)
+R_CELL={}; % Every row stores a molecule with at least one nt being of type 'R' and all of its associated labels (OCR, bl and E), and its folding
+C_CELL={}; % Every row stores a molecule with at least one nt being of type 'C' and all of its associated labels (OCR, bl and E), and its folding
 
 % -- Variable to store the molecules that hydrolyze, the new molecules formed by their hydrolysis and the time step in which this occurs
 HYDROLYZED={}; % Every row stores a molecule, and the columns mean: 
@@ -421,6 +443,10 @@ for i=1:t
             if num_breaks ~=0
     
                 % 3rd. RANDOMLY SELECT THE P-BONDS THAT ARE GOING TO BREAK AND ACTUALIZE THE L (POOL) VARIABLE
+
+                %disp(k_hyd);
+                %disp(strcat('pb_counter: ', num2str(pb_counter)));
+                %disp(strcat('num_breaks: ', num2str(num_breaks)));
     
                 pb_breaks=transpose(randsample(pb_counter-1,num_breaks));   % Specific p_bonds that break (integer identifiers)
                                                                             % randsample requires the Statistics toolbox, another function to be used istead could be randperm.
@@ -465,7 +491,7 @@ for i=1:t
                     m_break_bl = L{3,molecule_idx};
                     m_break_E = L{4,molecule_idx};  
                     m_break_folding = L{5,molecule_idx}; 
-                    [new_molecules]=break_molecule(c{mol,2},m_break,m_break_OCR,m_break_bl,m_break_E);
+                    [new_molecules]=break_molecule(c{mol,2},m_break,m_break_OCR,m_break_bl,m_break_E); % New molecules include the folding, of course.
                     M_to_be_added=[M_to_be_added new_molecules];            
     
                     HYDROLYZED(end+1,:)={m_break, m_break_OCR, m_break_bl, m_break_E, m_break_folding, new_molecules, i}; % Every row stores a molecule, and the columns mean: 
@@ -523,17 +549,20 @@ for i=1:t
 
                                     Rup = rupture(beta(i),k(1)-1); 
                                     counter_rand=counter_rand+1;
-
+                                    is_R=0;
+                                    is_C=0;
                                     if Rup==1                            
                                         noligo_r=oligo_r(1:k(1)-1); % Delete possible empty ('-') positions of right oligo
                                         nOCR_r=OCR_r(1:k(1)-1);
                                         nE_r=E_r(1:k(1)-1);
                                         if any(nOCR_r=='R')
-                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r};                        
+                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r, []}; 
+                                            is_R=1;
                                         end
 
                                         if any(OCR_r=='C')
-                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r};
+                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r, []};
+                                            is_C=1;
                                         end
 
                                         bl_r='';
@@ -549,6 +578,14 @@ for i=1:t
                                             nE_r='!';
                                         end
                                         L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r); % Introducing folding inside ampliation function
+                                        % -- Copy the folding into C/R_CELL too:
+                                        if is_R
+                                            R_CELL{end,5}=L{5,1};
+                                        end
+                                        if is_C
+                                            C_CELL{end,5}=L{5,1};
+                                        end
+
                                         oligo_r(1:k(1)-1)='-';
                                         OCR_r(1:k(1)-1)='-';
                                         E_r(1:k(1)-1)='-';
@@ -567,13 +604,17 @@ for i=1:t
                                         noligo_r=oligo_r((k(z)+1):(k(z+1)-1)); % Delete possible empty ('-') positions of right oligo
                                         nOCR_r=OCR_r((k(z)+1):(k(z+1)-1));
                                         nE_r=E_r((k(z)+1):(k(z+1)-1));
-                                        
+                                        is_R=0;
+                                        is_C=0;
+
                                         if any(nOCR_r=='R')
-                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r};                        
+                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r, []};  
+                                            is_R=1;
                                         end
 
                                         if any(OCR_r=='C')
-                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r};
+                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r, []};
+                                            is_C=1;
                                         end
 
                                         bl_r='';
@@ -589,6 +630,13 @@ for i=1:t
                                             nE_r='!';
                                         end
                                         L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r);
+                                        % -- Copy the folding into C/R_CELL too:
+                                        if is_R
+                                            R_CELL{end,5}=L{5,1};
+                                        end
+                                        if is_C
+                                            C_CELL{end,5}=L{5,1};
+                                        end
                                         oligo_r((k(z)+1):(k(z+1)-1))='-';
                                         OCR_r((k(z)+1):(k(z+1)-1))='-';
                                         E_r((k(z)+1):(k(z+1)-1))='-';
@@ -608,12 +656,17 @@ for i=1:t
                                         nOCR_r=OCR_r(k(temps)+1:size(oligo_l,2));
                                         nE_r=E_r(k(temps)+1:size(oligo_l,2));
 
+                                        is_R=0;
+                                        is_C=0;
+
                                         if any(nOCR_r=='R')
-                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r};                        
+                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r, []};    
+                                            is_R=1;
                                         end
 
                                         if any(OCR_r=='C')
-                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r};
+                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r, []};
+                                            is_C=1;
                                         end
 
                                         bl_r='';
@@ -629,6 +682,13 @@ for i=1:t
                                             nE_r='!';
                                         end
                                         L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r);
+                                        % -- Copy the folding into R_CELL too:
+                                        if is_R
+                                            R_CELL{end,5}=L{5,1};
+                                        end
+                                        if is_C
+                                            C_CELL{end,5}=L{5,1};
+                                        end
                                         oligo_r(k(temps)+1:size(oligo_l,2))='-';
                                         OCR_r(k(temps)+1:size(oligo_l,2))='-';
                                         E_r(k(temps)+1:size(oligo_l,2))='-';
@@ -647,12 +707,17 @@ for i=1:t
                                         nOCR_r=OCR_r((k(z)+1):(k(z+1)-1));
                                         nE_r=E_r((k(z)+1):(k(z+1)-1));
 
+                                        is_R=0;
+                                        is_C=0;
+
                                         if any(nOCR_r=='R')
-                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r};                        
+                                            R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r, []};  
+                                            is_R=1;
                                         end
 
                                         if any(OCR_r=='C')
-                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r};
+                                            C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l((k(z)+1):(k(z+1)-1)),nE_r, []};
+                                            is_C=1;
                                         end
 
                                         bl_r='';
@@ -668,6 +733,13 @@ for i=1:t
                                             nE_r='!';
                                         end
                                         L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r);
+                                        % -- Copy the folding into C/R_CELL too:
+                                        if is_R
+                                            R_CELL{end,5}=L{5,1};
+                                        end
+                                        if is_C
+                                            C_CELL{end,5}=L{5,1};
+                                        end
                                         oligo_r((k(z)+1):(k(z+1)-1))='-';
                                         OCR_r((k(z)+1):(k(z+1)-1))='-';
                                         E_r((k(z)+1):(k(z+1)-1))='-';
@@ -692,12 +764,17 @@ for i=1:t
                                 nOCR_r=OCR_r(1:k(1)-1);
                                 nE_r=E_r(1:k(1)-1);
 
+                                is_R=0;
+                                is_C=0;
+
                                 if any(nOCR_r=='R')
-                                    R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r};                        
+                                    R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r, []};     
+                                    is_R=1;
                                 end
 
                                 if any(OCR_r=='C')
-                                    C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r};
+                                    C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(1:k(1)-1),nE_r, []};
+                                    is_C=1;
                                 end
 
                                 bl_r='';
@@ -713,6 +790,13 @@ for i=1:t
                                     nE_r='!';
                                 end
                                 L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r);
+                                % -- Copy the folding into C/R_CELL too:
+                                if is_R
+                                    R_CELL{end,5}=L{5,1};
+                                end
+                                if is_C
+                                    C_CELL{end,5}=L{5,1};
+                                end
                                 oligo_r(1:k(1)-1)='-';
                                 OCR_r(1:k(1)-1)='-';
                                 E_r(1:k(1)-1)='-';
@@ -732,12 +816,17 @@ for i=1:t
                                 nOCR_r=OCR_r(k(temps)+1:size(oligo_l,2));
                                 nE_r=E_r(k(temps)+1:size(oligo_l,2));
 
+                                is_R=0;
+                                is_C=0;
+
                                 if any(nOCR_r=='R')
-                                    R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r};                        
+                                    R_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r, []};    
+                                    is_R=1;
                                 end
 
                                 if any(OCR_r=='C')
-                                    C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r};
+                                    C_CELL(end+1,:)={nOCR_r, noligo_r, bl_l(k(temps)+1:size(oligo_l,2)),nE_r, []};
+                                    is_C=1;
                                 end
 
                                 bl_r='';
@@ -753,6 +842,13 @@ for i=1:t
                                     nE_r='!';
                                 end
                                 L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r);
+                                % -- Copy the folding into C/R_CELL too:
+                                if is_R
+                                    R_CELL{end,5}=L{5,1};
+                                end
+                                if is_C
+                                    C_CELL{end,5}=L{5,1};
+                                end
                                 oligo_r(k(temps)+1:size(oligo_l,2))='-';
                                 OCR_r(k(temps)+1:size(oligo_l,2))='-';
                                 E_r(k(temps)+1:size(oligo_l,2))='-';
@@ -798,16 +894,20 @@ for i=1:t
                             noligo_r=oligo_r(oligo_r~='-'); % Delete possible empty ('-') positions of right oligo
                             nOCR_r=OCR_r(OCR_r~='-');
                             nE_r=E_r(E_r~='-');
+                            is_R=0;
+                            is_C=0;
                             if size(nE_r,2)==1
                                 nE_r='!';
                             end
 
                             if any(OCR_r=='R')
-                                R_CELL(end+1,:)={OCR_r, oligo_r, bl_l, E_r};                        
+                                R_CELL(end+1,:)={OCR_r, oligo_r, bl_l, E_r, []}; 
+                                is_R=1;
                             end
                             
                             if any(OCR_r=='C')
-                                C_CELL(end+1,:)={OCR_r, oligo_r, bl_l, E_r};
+                                C_CELL(end+1,:)={OCR_r, oligo_r, bl_l, E_r, []};
+                                is_C=1;
                             end
                             
                             % -- Actualize L (the pool)
@@ -817,7 +917,7 @@ for i=1:t
                             if size(E_l,2)==1
                                 E_l='!';
                             end
-                            L=ampliation_E1_MODIF(L,oligo_l,OCR_l,bl_l,E_l);
+                            L=ampliation_E1_MODIF(L,oligo_l,OCR_l,bl_l,E_l);                            
                             bl_r='';
                             if size(noligo_r,2)==1
                                 bl_r='X';
@@ -828,6 +928,13 @@ for i=1:t
                             new_OCR_r=nOCR_r;
                             new_OCR_r(nOCR_r=='R')='O';
                             L=ampliation_E1_MODIF(L,noligo_r,new_OCR_r,bl_r,nE_r);
+                            % -- Copy the folding into C/R_CELL too:
+                            if is_R
+                                R_CELL{end,5}=L{5,1};
+                            end
+                            if is_C
+                                C_CELL{end,5}=L{5,1};
+                            end
                             
                         end
                     end
@@ -844,6 +951,7 @@ for i=1:t
                     Rup = rupture(beta(i),num_pb);
                     if Rup
                         L{5,pos}={f_mol{1},f_mol{2},[0]};
+                        total_denat_fold=total_denat_fold+1;
                     end
                 end
 
@@ -874,12 +982,17 @@ for i=1:t
                             bl_rewritten(end)='X';
                             E_chain=U_E(1:k(1)-1);
 
+                            is_R=0;
+                            is_C=0;
+
                             if any(OCR_chain=='R')
-                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain};                        
+                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain, []};      
+                                is_R=1;
                             end
 
                             if any(OCR_chain=='C')
-                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain};
+                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain, []};
+                                is_C=1;
                             end
                             
                             bl_new='';
@@ -897,6 +1010,13 @@ for i=1:t
                                 E_chain='!';
                             end
                             L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                            % -- Copy the folding into C/R_CELL too:
+                            if is_R
+                                R_CELL{end,5}=L{5,1};
+                            end
+                            if is_C
+                                C_CELL{end,5}=L{5,1};
+                            end
                             U(1:k(1)-1)='-';
                             O_U(1:k(1)-1)=0;
                             U_OCR(1:k(1)-1)='-';
@@ -919,12 +1039,17 @@ for i=1:t
                             bl_rewritten(end)='X';
                             E_chain=U_E((k(z)+1):(k(z+1)-1));
 
+                            is_R=0;
+                            is_C=0;
+
                             if any(OCR_chain=='R')
-                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten,E_chain};                        
+                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten,E_chain, []}; 
+                                is_R=1;
                             end
 
                             if any(OCR_chain=='C')
-                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten,E_chain};
+                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten,E_chain, []};
+                                is_C=1;
                             end
 
                             bl_new='';
@@ -941,6 +1066,13 @@ for i=1:t
                                 E_chain='!';
                             end
                             L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                            % -- Copy the folding into C/R_CELL too:
+                            if is_R
+                                R_CELL{end,5}=L{5,1};
+                            end
+                            if is_C
+                                C_CELL{end,5}=L{5,1};
+                            end
                             U((k(z)+1):(k(z+1)-1))='-';
                             O_U((k(z)+1):(k(z+1)-1))=0;
                             U_OCR((k(z)+1):(k(z+1)-1))='-';
@@ -961,12 +1093,17 @@ for i=1:t
                             bl_chain=C_bl(k(temps)+1:Lambda);
                             E_chain=U_E(k(temps)+1:Lambda);
 
+                            is_R=0;
+                            is_C=0;
+
                             if any(OCR_chain=='R')
-                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain};                        
+                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain, []};       
+                                is_R=1;
                             end
 
                             if any(OCR_chain=='C')
-                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain};
+                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain, []};
+                                is_C=1;
                             end
 
                             bl_new='';
@@ -983,6 +1120,13 @@ for i=1:t
                                 E_chain='!';
                             end
                             L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                            % -- Copy the folding into C/R_CELL too:
+                            if is_R
+                                R_CELL{end,5}=L{5,1};
+                            end
+                            if is_C
+                                C_CELL{end,5}=L{5,1};
+                            end
                             U(k(temps)+1:Lambda)='-';
                             O_U(k(temps)+1:Lambda)=0;
                             U_OCR(k(temps)+1:Lambda)='-';
@@ -1003,14 +1147,19 @@ for i=1:t
                             bl_chain=C_bl((k(z)+1):(k(z+1)-1));
                             bl_rewritten=bl_chain;
                             bl_rewritten(end)='X';
-                            E_chain=U_E((k(z)+1):(k(z+1)-1));                           
+                            E_chain=U_E((k(z)+1):(k(z+1)-1));   
+                            
+                            is_R=0;
+                            is_C=0;
 
                             if any(OCR_chain=='R')
-                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain};                        
+                                R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain, []};   
+                                is_R=1;
                             end
 
                             if any(OCR_chain=='C')
-                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain};
+                                C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain, []};
+                                is_C=1;
                             end
 
                             bl_new='';
@@ -1027,6 +1176,13 @@ for i=1:t
                                 E_chain='!';
                             end
                             L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                            % -- Copy the folding into C/R_CELL too:
+                            if is_R
+                                R_CELL{end,5}=L{5,1};
+                            end
+                            if is_C
+                                C_CELL{end,5}=L{5,1};
+                            end
                             U((k(z)+1):(k(z+1)-1))='-';
                             O_U((k(z)+1):(k(z+1)-1))=0;
                             U_OCR((k(z)+1):(k(z+1)-1))='-';
@@ -1055,12 +1211,17 @@ for i=1:t
                     bl_rewritten(end)='X';
                     E_chain=U_E(1:k(1)-1);
 
+                    is_R=0;
+                    is_C=0;
+
                     if any(OCR_chain=='R')
-                        R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain};                        
+                        R_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain, []};  
+                        is_R=1;
                     end
 
                     if any(OCR_chain=='C')
-                        C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain};
+                        C_CELL(end+1,:)={OCR_chain, nt_chain, bl_rewritten, E_chain, []};
+                        is_C=1;
                     end
                     
                     bl_new='';
@@ -1078,6 +1239,13 @@ for i=1:t
                         E_chain='!';
                     end
                     L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                    % -- Copy the folding into C/R_CELL too:
+                    if is_R
+                        R_CELL{end,5}=L{5,1};
+                    end
+                    if is_C
+                        C_CELL{end,5}=L{5,1};
+                    end
                     U(1:k(1)-1)='-';
                     O_U(1:k(1)-1)=0;
                     U_OCR(1:k(1)-1)='-';
@@ -1097,12 +1265,18 @@ for i=1:t
                     nt_chain=U(k(temps)+1:Lambda);
                     bl_chain=C_bl(k(temps)+1:Lambda);
                     E_chain=U_E(k(temps)+1:Lambda);
+
+                    is_R=0;
+                    is_C=0;
+
                     if any(OCR_chain=='R')
-                        R_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain};                        
+                        R_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain, []};
+                        is_R=1;
                     end
 
                     if any(OCR_chain=='C')
-                        C_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain};
+                        C_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain, []};
+                        is_C=1;
                     end
 
                     bl_new='';
@@ -1119,6 +1293,13 @@ for i=1:t
                         E_chain='!';
                     end
                     L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                    % -- Copy the folding into C/R_CELL too:
+                    if is_R
+                        R_CELL{end,5}=L{5,1};
+                    end
+                    if is_C
+                        C_CELL{end,5}=L{5,1};
+                    end
                     U(k(temps)+1:Lambda)='-';
                     O_U(k(temps)+1:Lambda)=0;
                     U_OCR(k(temps)+1:Lambda)='-';
@@ -1138,13 +1319,20 @@ for i=1:t
                 nt_chain=U;
                 bl_chain=C_bl;
                 E_chain=U_E;
+
+                is_R=0;
+                is_C=0;
+
                 if any(OCR_chain=='R')
-                    R_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain};                        
+                    R_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain, []};    
+                    is_R=1;
                 end
 
                 if any(OCR_chain=='C')
-                    C_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain};
+                    C_CELL(end+1,:)={OCR_chain, nt_chain, bl_chain, E_chain, []};
+                    is_C=1;
                 end
+                
 
                 bl_new='';
                 bl_new(1:size(nt_chain,2))='0'; % All links are "good", because they were generated by template depending polymerization
@@ -1153,6 +1341,13 @@ for i=1:t
                 new_OCR_chain(OCR_chain=='R')='O';   
 
                 L=ampliation_E1_MODIF(L,nt_chain,new_OCR_chain,bl_new,E_chain);
+                % -- Copy the folding into C/R_CELL too:
+                if is_R
+                    R_CELL{end,5}=L{5,1};
+                end
+                if is_C
+                    C_CELL{end,5}=L{5,1};
+                end
                 U(1:Lambda)='-';
                 O_U(1:Lambda)=0;
                 U_OCR(1:Lambda)='-';
@@ -1443,105 +1638,48 @@ for i=1:t
             end
         end
 
+% ---- Update variables (more efficient code, although it increases ~30
+% seconds the simulation time and the weight of the file goes from 0.2 MB to 11 MB):.
+    pol_cols=cellfun(@(x) length(x)>1, L(1,:)); % <--- Just save the polymers
+    seqs_data=L(1,pol_cols);
+    Lt{i,1}=seqs_data; 
+    % Lt_OCR{i,1}=L(2,pol_cols);
+    % Lt_bl{i,1}=L(3,pol_cols);
+    % Lt_E{i,1}=L(4,pol_cols);
+    % Lt_fold{i,1}=L(5,pol_cols); % <-- Esta info realmente no es necesaria, teniendo la secuencia la puedo calcular
+    structures=L(5,pol_cols);
+    folded_fout=cellfun(@(x) x{3}==1, structures);
+    folded_how_many{i,1}=sum(folded_fout); % Stores only the ssRNAs that are folded in this time step (so if they have mfe but where denaturalized in preivous step, they are not included)
+    folded_how_many{i,2}=cellfun(@length,seqs_data(folded_fout)); % Stores the length of those polymers.
+    total_pols_pool{i,1}=size(structures,2);
+    total_pols_pool{i,2}=cellfun(@length,seqs_data);
+    mfe_fout=cellfun(@(x) any(x{1}~='.'), structures);
+    mfe_how_many{i,1}=sum(mfe_fout);
+    mfe_how_many{i,2}=cellfun(@length,seqs_data(mfe_fout));
+    mean_energy(i,1)=mean(cellfun(@(x) x{2}, structures(mfe_fout)));
+
+   % Number and size of molecules attached to clay or level 1:
+    d = diff([0 O_C 0]);
+    start_idx = find(d == 1);
+    end_idx   = find(d == -1) - 1;
+    poly_sizes = end_idx - start_idx + 1;
+    poly_sizes = poly_sizes(poly_sizes>1);
+    num_polymers = numel(poly_sizes);
+    total_pols_C{i,1} = num_polymers;
+    total_pols_C{i,2} = poly_sizes;
+
+    d = diff([0 O_U 0]);
+    start_idx = find(d == 1);
+    end_idx   = find(d == -1) - 1;
+    poly_sizes = end_idx - start_idx + 1;
+    poly_sizes = poly_sizes(poly_sizes>1);
+    num_polymers = numel(poly_sizes);
+    total_pols_U{i,1} = num_polymers;
+    total_pols_U{i,2} = poly_sizes;
+
+
 % ---- Update variables. NOTICE: Uncomment following lines to obtain all possible data from simulations in addition to the Activity, R_CELL and C_CELL variables (althoug notice that this will require additional time per simulation)----
-
-%         % Update the pool and the occupancy arrays
-%         Ltemp='|';
-%         LOCRtemp='|';
-%         Lbltemp='|';
-%         LEtemp='|';
-%         for n=1:size(L,2)
-%             tempL=[L{1,n},'|'];
-%             tempLOCR=[L{2,n},'|'];
-%             tempLbl=[L{3,n},'|'];
-%             tempLE=[L{4,n},'|'];
-%             tempL2=[Ltemp,tempL];
-%             tempLOCR2=[LOCRtemp,tempLOCR];
-%             tempLbl2=[Lbltemp,tempLbl];
-%             tempLE2=[LEtemp,tempLE];
-%             Ltemp=tempL2; %Ltemp has a structure like this: '|A|A|T|AG|A|AAC|...', where | separates the different oligos/nts.
-%             LOCRtemp=tempLOCR2; %LOCRtemp has a structure like this: '|O|O|O|CC|O|OCC|...', where | separates the different oligos/nts.
-%             Lbltemp=tempLbl2; %Lbltemp has a structure like this: '|0|0|0|0X|0|00X|...', where | separates the different oligos/nts.
-%             LEtemp=tempLE2; %Lbltemp has a structure like this: '|!|!|!|AB|!|!JK|...', where | separates the different oligos/nts.
-%         end
-% 
-
-% 
-%     if i~=1
-% 
-%         %% -- Lt
-% 
-%         if size(Ltemp,2)==size(Lt(end,:),2)
-%             Lt=[Lt;Ltemp];
-%         else
-%             prev_size=size(Lt(end,:),2);
-%             new_size=size(Ltemp,2);
-% 
-%             if prev_size>new_size
-%                 Ltemp(end+1:size(Lt(end,:),2))='|';
-%             elseif new_size>prev_size
-%                 Lt(1:end,end+1:size(Ltemp(end,:),2))='|';
-%             end
-%             Lt=[Lt;Ltemp];
-%         end
-% 
-%          %% -- LtOCR
-%         
-%         if size(LOCRtemp,2)==size(Lt_OCR(end,:),2)
-%             Lt_OCR=[Lt_OCR;LOCRtemp];
-%         else
-%             prev_size=size(Lt_OCR(end,:),2);
-%             new_size=size(LOCRtemp,2);
-% 
-%             if prev_size>new_size
-%                 LOCRtemp(end+1:size(Lt_OCR(end,:),2))='|';
-%             elseif new_size>prev_size
-%                 Lt_OCR(1:end,end+1:size(LOCRtemp(end,:),2))='|';
-%             end
-%             Lt_OCR=[Lt_OCR;LOCRtemp];
-%         end
-% 
-%         %% -- Ltbl
-% 
-%         if size(Lbltemp,2)==size(Lt_bl(end,:),2)
-%             Lt_bl=[Lt_bl;Lbltemp];
-%         else
-%             prev_size=size(Lt_bl(end,:),2);
-%             new_size=size(Lbltemp,2);
-% 
-%             if prev_size>new_size
-%                 Lbltemp(end+1:size(Lt_bl(end,:),2))='|';
-%             elseif new_size>prev_size
-%                 Lt_bl(1:end,end+1:size(Lbltemp(end,:),2))='|';
-%             end
-%             Lt_bl=[Lt_bl;Lbltemp];
-%         end
-% 
-%         %% -- LtE
-% 
-%         if size(LEtemp,2)==size(Lt_E(end,:),2)
-%             Lt_E=[Lt_E;LEtemp];
-%         else
-%             prev_size=size(Lt_E(end,:),2);
-%             new_size=size(LEtemp,2);
-% 
-%             if prev_size>new_size
-%                 LEtemp(end+1:size(Lt_E(end,:),2))='|';
-%             elseif new_size>prev_size
-%                 Lt_E(1:end,end+1:size(LEtemp(end,:),2))='|';
-%             end
-%             Lt_E=[Lt_E;LEtemp];
-%         end
-% 
-% 
-%     else
-%         Lt=[Lt;Ltemp];
-%         Lt_OCR=[Lt_OCR;LOCRtemp];
-%         Lt_bl=[Lt_bl;Lbltemp];
-%         Lt_E=[Lt_E;LEtemp];
-% 
-%     end
-% 
+ 
 % Ot_C=[Ot_C;O_C];
 % Ot_U=[Ot_U;O_U];
 % Ct=[Ct;C];
