@@ -1,4 +1,4 @@
-function EarlyWorld_hydrolysis(Simulation_Name, alpha0, beta0, A_arr, T_arr, polymer_size, Ns_start, Ns_final, interval, tmax, log_Ph_min_arr, log_Ph_max_arr, is_sq)
+function EarlyWorld_MFE(Simulation_Name, alpha0, beta0, A_arr, T_arr, polymer_size, Ns_start, Ns_final, interval, tmax, log_Ph_min_arr, log_Ph_max_arr, is_sq)
 
 
 
